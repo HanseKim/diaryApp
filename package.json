@@ -12,8 +12,8 @@
   "dependencies": {
     "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^1.24.0",
-    "@react-native-firebase/app": "^21.7.1",
-    "@react-native-firebase/messaging": "^21.7.1",
+    "@react-native-firebase/app": "^21.10.0",
+    "@react-native-firebase/messaging": "^21.10.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/stack": "^7.1.1",
@@ -22,11 +22,12 @@
     "react": "18.3.1",
     "react-native": "0.77.0",
     "react-native-animatable": "^1.4.0",
-    "react-native-gesture-handler": "^2.22.1",
+    "react-native-gesture-handler": "^2.23.1",
     "react-native-radio-buttons-group": "^3.1.0",
     "react-native-safe-area-context": "^5.2.0",
     "react-native-screens": "^4.6.0",
     "react-native-vector-icons": "^10.2.0",
+    "recoil": "^0.7.7",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {

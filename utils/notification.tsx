@@ -1,6 +1,9 @@
 import notifee, { EventType, AndroidImportance, TriggerType, RepeatFrequency } from '@notifee/react-native';
 import { Alert } from 'react-native';
 import messaging from '@react-native-firebase/messaging';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { refreshTriggerState } from '../store/recoilstate';
+import { useEffect } from 'react';
 
 // 알림 채널 생성
 async function createNotificationChannel() {
@@ -30,6 +33,45 @@ export async function requestNotificationPermission() {
 //중복방지 변수
 let displayedNotifications = new Set<string>();
 
+export const useFCMListener = () => {
+  const [refreshTrigger, setRefreshTrigger] = useRecoilState(refreshTriggerState);
+
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async (remoteMessage) => {
+      const messageId = remoteMessage.messageId;
+
+      if (!messageId || displayedNotifications.has(messageId)) {
+        console.log('📌 중복된 알림이므로 무시합니다.');
+        return;
+      }
+
+      console.log('📩 Foreground Notification Received:', remoteMessage);
+
+      if (remoteMessage.notification) {
+        await notifee.displayNotification({
+          title: remoteMessage.notification.title || '알림',
+          body: remoteMessage.notification.body || '새로운 메시지가 도착했습니다.',
+          android: {
+            channelId: 'default',
+            smallIcon: 'ic_launcher',
+            sound: 'default',
+            importance: AndroidImportance.HIGH,
+          },
+        });
+
+        setRefreshTrigger((prev) => prev + 1); // 상태 업데이트
+
+        // 표시된 알림 ID 저장 (중복 방지)
+        displayedNotifications.add(messageId);
+        setTimeout(() => displayedNotifications.delete(messageId), 30000);
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup
+  }, [refreshTrigger, setRefreshTrigger]);
+
+  return null;
+};
 //포그라운드 알림
 export function setupForegroundNotificationListener() {
   messaging().onMessage(async remoteMessage => {
@@ -43,7 +85,11 @@ export function setupForegroundNotificationListener() {
 
     console.log('📩 Foreground Notification Received:', remoteMessage);
 
+
+
     if (remoteMessage.notification) {
+      
+
       await notifee.displayNotification({
         title: remoteMessage.notification.title || '알림',
         body: remoteMessage.notification.body || '새로운 메시지가 도착했습니다.',
@@ -54,6 +100,11 @@ export function setupForegroundNotificationListener() {
           importance: AndroidImportance.HIGH,
         },
       });
+      const setRefreshTrigger = useSetRecoilState(refreshTriggerState);
+      setRefreshTrigger((prev) => prev + 1);
+
+      const refreshTrigger = useRecoilValue(refreshTriggerState);
+      Alert.alert(String(refreshTrigger));
 
       // 표시된 알림 ID 저장 (중복 방지)
       displayedNotifications.add(messageId);

@@ -26,8 +26,11 @@ const LoginScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigat
 
       if (enabled) {
         const token = await messaging().getToken();
-        console.log('FCM Token:', token);
+        Alert.alert('FCM Token:', token);
         return token;
+      }
+      else {
+        Alert.alert("not enabled");
       }
     } catch (error) {
       console.error('FCM token error:', error);
@@ -89,19 +92,16 @@ const LoginScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigat
 
         const fcmToken = await getFCMToken();
 
-        // FCM 토큰 서버 저장
-        if (fcmToken) {
-          const url = 'http://10.0.2.2:80/login/save-fcm-token';
-          await fetch(url, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              token: fcmToken
-            }),
+          // FCM 토큰 서버 저장
+          if (fcmToken) {
+            setFcm(fcmToken);
+          }
+            
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Main' }],
           });
-        }
+
         navigation.reset({
           index: 0,
           routes: [{ name: 'Main' }],

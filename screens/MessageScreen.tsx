@@ -131,7 +131,9 @@ const MessageScreen: React.FC<{ route: any, navigation: any }> = ({ route, navig
     if (message.trim()) {
       const now = moment();
       const newMessage = { id: Date.now().toString(), user: userid, text: message, date: now.format('YY-MM-DD HH:mm') };
-      socket.emit("new message", newMessage, groupid); // 메시지 서버로 전송
+      const storedUserInfo = await AsyncStorage.getItem("userInfo");
+      const info = JSON.parse(String(storedUserInfo)).nickname;
+      socket.emit("new message", newMessage, groupid, info); // 메시지 서버로 전송
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
       setMessage("");
