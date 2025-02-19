@@ -19,6 +19,7 @@ import {
   ScrollView,
 } from 'react-native';
 import EditDiaryScreen from './EditDiaryScreen';
+import { apiClient } from '../utils/apiClient';
 
 const setEmoteType = (emote: any) => {
   const emoteList = ['😞', '😠', '😐', '😊', '😄'];
@@ -105,16 +106,10 @@ const DiaryDetailScreen: React.FC<{ route: any, navigation: any }> = ({ route, n
 
   const fetchUsers = async (userId: string, diaryDate: string) => {
     try {
-      const response = await fetch(`http://10.0.2.2:80/detail`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ user_id: userId, diary_date: diaryDate }),
-        }
+      const response = await apiClient.post(`/detail`,
+        { user_id: userId, diary_date: diaryDate }
       );
-      const json = await response.json();
+      const json = await response.data;
       if (json.success) {
         setDiary(json.data[0]);
       } else {
@@ -219,7 +214,7 @@ const styles = StyleSheet.create({
       width: 5,
       height: 8,
     },
-    shadowOpacity: 1,
+    shadowOpacity: 0.5,
     shadowRadius: 10,
     elevation: 8,
     alignItems: 'center',
@@ -244,6 +239,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 50, // ios 에서 안보임
   },
   spaceBetween: {
     justifyContent: 'space-between',

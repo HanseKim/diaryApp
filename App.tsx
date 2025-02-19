@@ -6,12 +6,14 @@ import MainTabNavigator from './navigators/MainTabNavigator';
 import DiaryDetailScreen from './screens/DiaryDetail';
 import SignUpScreen from './screens/SignUpScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import { initializeNotifications, useFCMListener } from './utils/notification';
+import { initializeNotifications } from './utils/notification';
 import { AppProvider } from './contexts/appContext'
 import MessageScreen from './screens/MessageScreen';
-import { WriteDiaryScreen } from './screens/WriteDiaryScreen';
+import {WriteDiaryScreen} from './screens/WriteDiaryScreen';
 import EditDiaryScreen from './screens/EditDiaryScreen';
-import { RecoilRoot } from 'recoil';
+import { setupForegroundNotificationListener } from './utils/notification';
+import { RecoilRoot } from 'recoil'; // RecoilRoot import 추가
+
 
 type RootStackParamList = {
   Login: undefined,
@@ -19,9 +21,9 @@ type RootStackParamList = {
   Main: undefined,
   Detail: undefined,
   SignUp: undefined,
-  Message: undefined,
-  WriteDiaryScreen: undefined
-  EditDiaryScreen: undefined
+  Message : undefined,
+  WriteDiaryScreen : undefined
+  EditDiaryScreen : undefined
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -29,26 +31,24 @@ const Stack = createStackNavigator<RootStackParamList>();
 function App(): React.JSX.Element {
   useEffect(() => {
     initializeNotifications();
+    setupForegroundNotificationListener();
   }, []);
 
   return (
     <RecoilRoot>
       <AppProvider>
-        {/* 💡 여기서 useFCMListener() 실행해야 함 */}
-        <FCMListenerWrapper />
-
         <NavigationContainer>
-          <Stack.Navigator
+        <Stack.Navigator 
             initialRouteName="Login"
             screenOptions={{
-              headerShown: false,
+              headerShown: false,  // 헤더 숨기기 추가
               cardStyle: { backgroundColor: '#fff' }
             }}
           >
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
             <Stack.Screen name="SignUp" component={SignUpScreen} />
-            <Stack.Screen name="Main" component={MainTabNavigator} />
+            <Stack.Screen name="Main" component={MainTabNavigator} options={{ headerTitle: '' }} />
             <Stack.Screen name="Detail" component={DiaryDetailScreen} />
             <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="WriteDiaryScreen" component={WriteDiaryScreen} />
@@ -57,14 +57,8 @@ function App(): React.JSX.Element {
         </NavigationContainer>
       </AppProvider>
     </RecoilRoot>
+    
   );
 }
-
-// 💡 `RecoilRoot` 내부에서 `useFCMListener()` 실행
-const FCMListenerWrapper = () => {
-  useFCMListener();
-  return null;
-};
-
 
 export default App;

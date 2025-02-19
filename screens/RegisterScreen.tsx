@@ -7,18 +7,15 @@ import {
 } from 'react-native';
 import RegisterInputScreen from '../components/RegisterInputScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { apiClient } from '../utils/apiClient';
 
 const RegisterScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
   const handleRegister = async (nickname: string, id: string, password: string) => {
     try {
-      const response = await fetch("http://10.0.2.2:80/login/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nickname, id, password }),
+      const response = await apiClient.post("/login/register", {
+        nickname, id, password 
       });
-      const data = await response.json();
+      const data = await response.data();
       if (data.success) {
         console.log("Registration successful!");
         navigation.reset({

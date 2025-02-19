@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { apiClient } from '../utils/apiClient';
 
 interface DiaryEntry {
   id: string;
@@ -37,17 +38,11 @@ const SearchScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   // 서버에서 일기 데이터를 가져오는 함수
   const fetchDiaryData = async (userId: string) => {
     try {
-      const response = await fetch(`http://10.0.2.2:80/diary/search-diary`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          user_id: userId,
-        }),
+      const response = await apiClient.post(`/diary/search-diary`, {
+        user_id: userId
       });
-      const data = await response.json();
-      if (response.ok) {
+      const data = response.data;
+      if (data) {
         const sortedData = data.sort((a: DiaryEntry, b: DiaryEntry) => 
           new Date(b.diary_date).getTime() - new Date(a.diary_date).getTime()
         );

@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    marginTop: 50,
   },
   chatRoomContainer: {
     borderRadius: 8,
