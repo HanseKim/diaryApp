@@ -20,15 +20,10 @@ import {
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AppContext } from "../contexts/appContext";
-import { fetchChatList, fetchGroupId, fetchCoupleCheck } from "../utils/apiClient";
+import { fetchChatList, fetchGroupId } from "../utils/apiClient";
 import { useFocusEffect } from "@react-navigation/native";
 import { refreshTriggerState } from '../store/recoilstate';
 import { useRecoilValue } from "recoil";
-
-
-type MessageProp = {
-  id: string; user: string; text: string, date: string;
-}
 
 const ChatScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
   const appContext = useContext(AppContext);
@@ -40,17 +35,12 @@ const ChatScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigati
 
   const { messages, setMessages } = appContext;
   const [cnt, setCnt] = useState<number>(0);
-  const [gid, setGid] = useState<string>("");
   const [isGroup, setIsGroup] = useState<boolean>(false);
   const refreshTrigger = useRecoilValue(refreshTriggerState);
   async function loadchat() {
     const isGroupResult = await fetchGroupId();
     if (isGroupResult) {
       setIsGroup(true);
-      const group_id = await AsyncStorage.getItem("groupid");
-      if (group_id !== null) {
-        setGid(group_id);
-      }
       
       const tmp = await AsyncStorage.getItem("chatdata");
       if (tmp) {
@@ -63,14 +53,12 @@ const ChatScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigati
       console.log("try fetch chat list");
 
       const data = await fetchChatList();
-      //Alert.alert(JSON.stringify(data));
+
       if (data["msg"].length > 0) {
         setMessages((prev) => [...prev, ...data['msg']]);
         setCnt(data["msg"].length);
-        //removeChat;
       }
       else {
-        console.log(data);
         setCnt(0);
       }
       

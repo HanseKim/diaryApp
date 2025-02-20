@@ -185,7 +185,6 @@ export async function initializeNotifications() {
   
   // 일일 알림 스케줄 설정
   await scheduleDailyNotification();
-  onDisplayNotification('이거나 먹어라', '개쉐이들아');
 }
 
 // 즉시 알림 표시
