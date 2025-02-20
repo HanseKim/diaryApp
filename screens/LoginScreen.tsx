@@ -45,13 +45,13 @@ const LoginScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigat
 
   // 자동 로그인 체크
   const checkAutoLogin = async () => {
-    console.log("자동 로그인 중");
+    //console.log("자동 로그인 중");
     const uid = await AsyncStorage.getItem("userid");
     const upwd = await AsyncStorage.getItem("userpwd");
     try {
       if (uid != null && upwd != null) {
         const loginResult = await login(uid, upwd);
-        console.log("Login API Result:", loginResult);
+        //console.log("Login API Result:", loginResult);
 
         // loginResult와 token이 있는지 확인
         // 로그인 성공 여부 체크
@@ -62,10 +62,15 @@ const LoginScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigat
         else {
 
           const fcmToken = await getFCMToken();
-
-          // FCM 토큰 서버 저장
+          //Alert.alert(String(fcmToken));
           if (fcmToken) {
-            setFcm(fcmToken);
+            try {
+              await setFcm(fcmToken);
+              //console.log('FCM token successfully saved to server');
+            } catch (fcmError) {
+              console.error('Failed to save FCM token:', fcmError);
+              // FCM 토큰 저장 실패는 로그인 진행에 영향을 주지 않도록 함
+            }
           }
 
           navigation.reset({
@@ -91,10 +96,12 @@ const LoginScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigat
 
       // FCM 토큰 획득 및 서버 저장
       const fcmToken = await getFCMToken();
+      //Alert.alert(String(fcmToken));
+
       if (fcmToken) {
         try {
           await setFcm(fcmToken);
-          console.log('FCM token successfully saved to server');
+          //console.log('FCM token successfully saved to server');
         } catch (fcmError) {
           console.error('Failed to save FCM token:', fcmError);
           // FCM 토큰 저장 실패는 로그인 진행에 영향을 주지 않도록 함
