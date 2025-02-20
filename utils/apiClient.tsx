@@ -54,21 +54,6 @@ export const fetchGroupId = async () => {
   }
 };
 
-
-export const removeChat = async () => {
-  try {
-    const gid = await AsyncStorage.getItem("groupid");
-    const response = await apiClient.post(
-      "/chat/delete",
-      {group_id : gid}
-    );
-  } catch (error) {
-    console.error("Error fetching group ID:", error);
-    
-    return false;
-  }
-};
-
 // JWT 토큰을 헤더에 설정
 export const setAuthToken = async () => {
   const token = await AsyncStorage.getItem("jwtToken"); // JWT 토큰을 AsyncStorage에서 가져옴
