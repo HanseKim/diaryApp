@@ -20,10 +20,10 @@ async function createNotificationChannel() {
 export async function requestNotificationPermission() {
   const settings = await notifee.requestPermission();
 
-  console.log('Notification permission settings:', settings);
+
 
   if (settings.authorizationStatus >= 1) {
-    console.log('Notification permissions granted.');
+
     await createNotificationChannel(); // 채널 생성
   } else {
     Alert.alert('권한 거부됨', '알림 권한을 허용해주세요.');
@@ -41,11 +41,11 @@ export const useFCMListener = () => {
       const messageId = remoteMessage.messageId;
 
       if (!messageId || displayedNotifications.has(messageId)) {
-        console.log('📌 중복된 알림이므로 무시합니다.');
+
         return;
       }
 
-      console.log('📩 Foreground Notification Received:', remoteMessage);
+
 
       if (remoteMessage.notification) {
         await notifee.displayNotification({
@@ -57,6 +57,16 @@ export const useFCMListener = () => {
             sound: 'default',
             importance: AndroidImportance.HIGH,
           },
+          ios: {  // iOS 설정 추가
+            sound: 'default',
+            categoryId: 'default',
+            foregroundPresentationOptions: {
+              badge: true,
+              sound: true,
+              banner: true,
+              list: true,
+            },
+          }
         });
 
         setRefreshTrigger((prev) => prev + 1); // 상태 업데이트
@@ -80,11 +90,11 @@ export function setupForegroundNotificationListener() {
 
     // messageId가 없거나 이미 표시된 알림이면 무시
     if (!messageId || displayedNotifications.has(messageId)) {
-      console.log('📌 중복된 알림이므로 무시합니다.');
+
       return;
     }
 
-    console.log('📩 Foreground Notification Received:', remoteMessage);
+
 
 
 
@@ -100,6 +110,16 @@ export function setupForegroundNotificationListener() {
           sound: 'default',
           importance: AndroidImportance.HIGH,
         },
+        ios: {  // iOS 설정 추가
+          sound: 'default',
+          categoryId: 'default',
+          foregroundPresentationOptions: {
+            badge: true,
+            sound: true,
+            banner: true,
+            list: true,
+          },
+        }
       });
       const setRefreshTrigger = useSetRecoilState(refreshTriggerState);
       setRefreshTrigger((prev) => prev + 1);
@@ -121,20 +141,29 @@ export function setupForegroundNotificationListener() {
 
 // FCM 알림 권한 요청
 export async function requestFCMPermission() {
-  const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-	    //android의 경우 기본값이 authorizaed
+  try {
+    await messaging().setAutoInitEnabled(true);
+    
+    const authStatus = await messaging().requestPermission({
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      provisional: false,
+      sound: true,
+    });
+    
+    if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+      const token = await messaging().getToken();
 
-    if (enabled) {
-      await messaging()
-        .getToken()
-        .then(fcmToken => {
-          console.log(fcmToken); //fcm token을 활용해 특정 device에 push를 보낼 수 있다.
-        })
-        .catch(e => console.log('error: ', e));
+      return token; // 토큰을 서버에 보내기 위해 반환
     }
+    
+    return null;
+  } catch (error) {
+
+    return null;
+  }
 }
 /*
 export async function scheduleDailyNotification() {
@@ -173,9 +202,9 @@ export async function scheduleDailyNotification() {
       }
     );
 
-    console.log('Daily notification scheduled for:', date.toLocaleString());
+
   } catch (error) {
-    console.error('Error scheduling notification:', error);
+
   }
 }*/
 
@@ -184,18 +213,21 @@ export async function initializeNotifications() {
   await requestNotificationPermission();
   await requestFCMPermission();
   
+  // 알림 확인 용
+  // onDisplayNotification();
+
   // 일일 알림 스케줄 설정
   //await scheduleDailyNotification();
 }
 
 // 즉시 알림 표시
-export async function onDisplayNotification(title: string, body: string) {
+export async function onDisplayNotification() {
   try {
     const channelId = await createNotificationChannel();
 
     await notifee.displayNotification({
-      title,
-      body,
+      title : '안녕',
+      body : "친구들 빡빡이 아져씨야",
       android: {
         channelId,
         smallIcon: 'ic_launcher', // Android용 아이콘 (앱의 리소스 폴더에서 제공해야 함)
@@ -203,8 +235,18 @@ export async function onDisplayNotification(title: string, body: string) {
         sound: 'default',
         vibrationPattern: [300, 500], // 진동 패턴
       },
+      ios: {  // iOS 설정 추가
+        sound: 'default',
+        categoryId: 'default',
+        foregroundPresentationOptions: {
+          badge: true,
+          sound: true,
+          banner: true,
+          list: true,
+        },
+      }
     });
   } catch (error) {
-    console.error('Error displaying notification:', error);
+
   }
 }
