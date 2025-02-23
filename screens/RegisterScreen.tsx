@@ -3,7 +3,9 @@ import {
   View,
   Image,
   StyleSheet,
-  ScrollView
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import RegisterInputScreen from '../components/RegisterInputScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,6 +41,10 @@ const RegisterScreen: React.FC<{ route: any, navigation: any }> = ({ route, navi
   }
 
   return (
+    <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS는 padding, Android는 height
+        style={{ flex: 1 }}
+      >
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
@@ -59,6 +65,7 @@ const RegisterScreen: React.FC<{ route: any, navigation: any }> = ({ route, navi
         </View>
       </ScrollView>
     </View>
+    </KeyboardAvoidingView>
   );
 };
 
