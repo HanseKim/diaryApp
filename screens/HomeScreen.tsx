@@ -145,10 +145,16 @@ const HomeScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigati
                 const parsedUserInfo = JSON.parse(storedUserInfo);
                 setUserid(parsedUserInfo.id);
             }
+            const token = await AsyncStorage.getItem("jwtToken");
             
             const response = await apiClient.post(`/home/coupleName`, {
                 user_id: userid
-            });
+            },
+            {
+                headers: {
+                  Authorization: `Bearer ${token}` // 헤더에 토큰 추가
+                }
+              });
             
             if (response.data.success) {
 
