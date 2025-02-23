@@ -8,7 +8,10 @@ import {
     StyleSheet,
     Alert,
     Platform,
-    Image
+    Image,
+    Keyboard,
+    TouchableWithoutFeedback,
+    KeyboardAvoidingView
 } from 'react-native';
 
 import axios from 'axios';
@@ -200,6 +203,11 @@ const WriteDiaryScreen: React.FC<{ route: any; navigation: any }> = ({ route, na
 
     return (
         <SafeAreaView style={styles.container}>
+            <KeyboardAvoidingView
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                    style={{flex:1}}
+                  >
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.header}>
                 <Text style={styles.Text} onPress={handlePrevDate}>◀</Text>
                 <Text style={styles.dateText}>{formatDate(date)}</Text>
@@ -279,6 +287,8 @@ const WriteDiaryScreen: React.FC<{ route: any; navigation: any }> = ({ route, na
             <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
                 <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
+            </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

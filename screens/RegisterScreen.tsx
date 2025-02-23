@@ -10,6 +10,7 @@ import {
 import RegisterInputScreen from '../components/RegisterInputScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiClient } from '../utils/apiClient';
+import KeyboardAvoidComponent from '../components/KeyboardAvoidComponent';
 
 const RegisterScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigation }) => {
   const handleRegister = async (nickname: string, id: string, password: string) => {
@@ -41,10 +42,7 @@ const RegisterScreen: React.FC<{ route: any, navigation: any }> = ({ route, navi
   }
 
   return (
-    <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"} // iOS는 padding, Android는 height
-        style={{ flex: 1 }}
-      >
+    <KeyboardAvoidComponent>
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
@@ -65,7 +63,7 @@ const RegisterScreen: React.FC<{ route: any, navigation: any }> = ({ route, navi
         </View>
       </ScrollView>
     </View>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidComponent>
   );
 };
 
