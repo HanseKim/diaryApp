@@ -7,12 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Alert,
   SafeAreaView,
 } from "react-native";
 import { io } from "socket.io-client";
