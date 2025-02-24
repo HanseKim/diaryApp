@@ -62,7 +62,6 @@ const MyInfoScreen: React.FC<{ route: any, navigation: any }> = ({ route, naviga
       
       if (currentUserInfo?.id) {
         const response = await apiClient.get(`/mypage/${currentUserInfo.id}`);
-        
         if (response.data.success) {
           const updatedUserInfo = {
             ...currentUserInfo,
@@ -81,7 +80,6 @@ const MyInfoScreen: React.FC<{ route: any, navigation: any }> = ({ route, naviga
           setCoupleName(updatedUserInfo.coupleName || "");
           setCoupleMonth(updatedUserInfo.couple_month || 0);
           setCoupleAll(updatedUserInfo.couple_all || 0);
-          
           const days = calculateDaysPassed(updatedUserInfo);
           setDaysPassed(days + 1);
         }
@@ -118,7 +116,7 @@ const MyInfoScreen: React.FC<{ route: any, navigation: any }> = ({ route, naviga
     }, [])
   );
   
-  const updateUserInfo = async (newDate: string, coupleName : any) => {
+  const updateUserInfo = async (newDate: string, coupleName : string) => {
     try {
       const response = await apiClient.post("/mypage/all", {
         nickname: userInfo.nickname,
@@ -203,13 +201,19 @@ const MyInfoScreen: React.FC<{ route: any, navigation: any }> = ({ route, naviga
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor:'white' }}>
+    <View style={{ 
+      flex: 1,
+      width: '100%',
+      height: '100%', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      backgroundColor:'#FFF5F7',
+      }}>
       {renderModal()}
       <Animatable.View
         animation={animateUser ? 'fadeInUp' : undefined}
         duration={500}
         delay={100}
-        style={{ marginBottom: 10 }}
       >
         <UserInfoComponent 
           name={userInfo ? userInfo.nickname || "???" : "???"} 
