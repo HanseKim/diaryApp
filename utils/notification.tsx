@@ -16,6 +16,50 @@ async function createNotificationChannel() {
   });
 }
 
+// requestFCMPermission 함수에서 토큰을 받아 서버에 전송
+export async function requestFCMPermission(): Promise<string | null> {
+  try {
+    await messaging().setAutoInitEnabled(true);
+    
+    const authStatus = await messaging().requestPermission({
+      alert: true,
+      announcement: false,
+      badge: true,
+      carPlay: false,
+      provisional: false,
+      sound: true,
+    });
+    
+    if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+      const token: string = await messaging().getToken();
+      // await sendTokenToServer(token);
+      return token;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error("FCM Token Error: ", error);
+    return null;
+  }
+}
+
+// // 서버에 토큰 보내기 (예시 API 호출)
+// async function sendTokenToServer(token : any) {
+//   try {
+//     const response = await fetch('https://your-server-url.com/api/save-token', {
+//       method: 'POST',
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       body: JSON.stringify({ token }),
+//     });
+//     const data = await response.json();
+//     // console.log('FCM Token saved to server: ', data);
+//   } catch (error) {
+//     // console.error('Error saving FCM token to server:', error);
+//   }
+// }
+
 // 알림 권한 요청
 export async function requestNotificationPermission() {
   const settings = await notifee.requestPermission();
@@ -94,13 +138,8 @@ export function setupForegroundNotificationListener() {
       return;
     }
 
-
-
-
-
     if (remoteMessage.notification) {
       
-
       await notifee.displayNotification({
         title: remoteMessage.notification.title || '알림',
         body: remoteMessage.notification.body || '새로운 메시지가 도착했습니다.',
@@ -140,31 +179,31 @@ export function setupForegroundNotificationListener() {
 
 
 // FCM 알림 권한 요청
-export async function requestFCMPermission() {
-  try {
-    await messaging().setAutoInitEnabled(true);
+// export async function requestFCMPermission() {
+//   try {
+//     await messaging().setAutoInitEnabled(true);
     
-    const authStatus = await messaging().requestPermission({
-      alert: true,
-      announcement: false,
-      badge: true,
-      carPlay: false,
-      provisional: false,
-      sound: true,
-    });
+//     const authStatus = await messaging().requestPermission({
+//       alert: true,
+//       announcement: false,
+//       badge: true,
+//       carPlay: false,
+//       provisional: false,
+//       sound: true,
+//     });
     
-    if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
-      const token = await messaging().getToken();
+//     if (authStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+//       const token = await messaging().getToken();
 
-      return token; // 토큰을 서버에 보내기 위해 반환
-    }
+//       return token; // 토큰을 서버에 보내기 위해 반환
+//     }
     
-    return null;
-  } catch (error) {
+//     return null;
+//   } catch (error) {
 
-    return null;
-  }
-}
+//     return null;
+//   }
+// }
 /*
 export async function scheduleDailyNotification() {
   try {
@@ -227,7 +266,7 @@ export async function onDisplayNotification() {
 
     await notifee.displayNotification({
       title : '안녕',
-      body : "친구들 빡빡이 아져씨야",
+      body : "하세요 너의 하루는 입니당",
       android: {
         channelId,
         smallIcon: 'ic_launcher', // Android용 아이콘 (앱의 리소스 폴더에서 제공해야 함)
