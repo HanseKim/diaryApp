@@ -1,37 +1,26 @@
 import React, { useEffect } from 'react';
+import { LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import MainTabNavigator from './navigators/MainTabNavigator';
-import { initializeNotifications } from './utils/notification';
-import { useFCMListener } from './utils/notification';
 import { AppProvider } from './contexts/appContext';
-import { setupForegroundNotificationListener } from './utils/notification';
 import { RecoilRoot } from 'recoil';
-import { useTokenRefresh } from './utils/tokenManager';
-import { LogBox } from 'react-native';
+import { initializeNotifications, useFCMListener, setupForegroundNotificationListener } from './utils/notification'; // notification.tsx에서 import
 
-type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
-  SignUp: undefined;
-  Main: undefined;
-};
-
-const AuthStack = createStackNavigator<AuthStackParamList>();
+const AuthStack = createStackNavigator();
 
 function App(): React.JSX.Element {
-  useTokenRefresh();
-
   useEffect(() => {
     async function setupNotifications() {
-      await initializeNotifications();
-      setupForegroundNotificationListener();
+      await initializeNotifications(); // 알림 권한 요청 & 설정
+      setupForegroundNotificationListener(); // 포그라운드 알림 리스너 실행
     }
-    LogBox.ignoreAllLogs();
-    setupNotifications();
+
+    LogBox.ignoreAllLogs(); // 불필요한 경고 숨김
+    setupNotifications(); // notification.tsx의 초기화 함수 호출
   }, []);
 
   return (
@@ -57,8 +46,9 @@ function App(): React.JSX.Element {
   );
 }
 
+// 🔹 FCM 알림 리스너 감싸기
 const FCMListenerWrapper = () => {
-  useFCMListener();
+  useFCMListener();  // notification.tsx에서 정의된 FCM 리스너 사용
   return null;
 };
 
