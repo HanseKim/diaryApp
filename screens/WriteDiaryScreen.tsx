@@ -11,7 +11,8 @@ import {
     Image,
     Keyboard,
     TouchableWithoutFeedback,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    ScrollView
 } from 'react-native';
 
 import axios from 'axios';
@@ -87,7 +88,7 @@ const PreDiaryQuestionsScreen: React.FC<{ navigation: any }> = ({ navigation }) 
     };
 
     return (
-        <View style={[styles.container,{justifyContent:'center'}]}>
+        <View style={[styles.Viewcontainer,{justifyContent:'center'}]}>
             <View style={[styles.diaryCard, { flex: 0.8 }]}>
                 <View style={styles.ribbon}>
                     <View style={styles.ribbonEnd} />
@@ -222,98 +223,104 @@ const WriteDiaryScreen: React.FC<{ route: any; navigation: any }> = ({ route, na
 
 
     return (
-        <KeyboardAvoidComponent>
-            <View style={styles.container}>
-                <View style={styles.diaryCard}>
-                    <View style={styles.ribbon}>
-                        <View style={styles.ribbonEnd} />
-                    </View>
-        
-                    {/* Date Header */}
-                    <View style={styles.navigationHeader}>
-                        <TouchableOpacity onPress={handlePrevDate} style={styles.navButton}>
-                            <Text style={styles.navButtonText}>◀</Text>
-                        </TouchableOpacity>
-                        <View style={styles.dateContainer}>
-                            <Text style={styles.dateText}>{formatDate(date)}</Text>
+        <SafeAreaView style={styles.container}>
+            <KeyboardAvoidComponent>
+                <ScrollView
+                    style={styles.Viewcontainer}
+                    keyboardShouldPersistTaps="handled"
+                    contentContainerStyle={styles.scrollContent}
+                >
+                    <View style={styles.diaryCard}>
+                        <View style={styles.ribbon}>
+                            <View style={styles.ribbonEnd} />
                         </View>
-                        <TouchableOpacity onPress={handleNextDate} style={styles.navButton}>
-                            <Text style={styles.navButtonText}>▶</Text>
-                        </TouchableOpacity>
-                    </View>
-        
-                    {/* Mood Selection */}
-                    <View style={styles.emotionSection}>
-                        <View style={styles.moodContainer}>
-                            {moodOptions.map((option, index) => (
+            
+                        {/* Date Header */}
+                        <View style={styles.navigationHeader}>
+                            <TouchableOpacity onPress={handlePrevDate} style={styles.navButton}>
+                                <Text style={styles.navButtonText}>◀</Text>
+                            </TouchableOpacity>
+                            <View style={styles.dateContainer}>
+                                <Text style={styles.dateText}>{formatDate(date)}</Text>
+                            </View>
+                            <TouchableOpacity onPress={handleNextDate} style={styles.navButton}>
+                                <Text style={styles.navButtonText}>▶</Text>
+                            </TouchableOpacity>
+                        </View>
+            
+                        {/* Mood Selection */}
+                        <View style={styles.emotionSection}>
+                            <View style={styles.moodContainer}>
+                                {moodOptions.map((option, index) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={[
+                                            styles.moodButton,
+                                            mood === option.value && styles.moodButtonSelected
+                                        ]}
+                                        onPress={() => setMood(option.value)}
+                                    >
+                                        <Image 
+                                            source={option.image} 
+                                            style={styles.moodImage} 
+                                            resizeMode="contain" 
+                                        />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+            
+                        {/* Title & Content Input */}
+                        <View style={styles.titleSection}>
+                            <TextInput
+                                style={styles.titleInput}
+                                placeholder="제목을 입력하세요"
+                                value={headline}
+                                onChangeText={setHeadline}
+                                placeholderTextColor="#FFB6C1"
+                            />
+                        </View>
+            
+                        <View style={styles.contentWrapper}>
+                            <TextInput
+                                style={styles.contentInput}
+                                placeholder="일기를 작성해주세요..."
+                                value={content}
+                                onChangeText={setContent}
+                                multiline
+                                placeholderTextColor="#FFB6C1"
+                            />
+                        </View>
+            
+                        {/* Privacy Options */}
+                        <View style={styles.privacySection}>
+                            {['Private', 'Couple'].map((option) => (
                                 <TouchableOpacity
-                                    key={index}
+                                    key={option}
                                     style={[
-                                        styles.moodButton,
-                                        mood === option.value && styles.moodButtonSelected
+                                        styles.privacyOption,
+                                        privacy === option && styles.privacyOptionSelected
                                     ]}
-                                    onPress={() => setMood(option.value)}
+                                    onPress={() => setPrivacy(option as 'Private' | 'Couple')}
                                 >
-                                    <Image 
-                                        source={option.image} 
-                                        style={styles.moodImage} 
-                                        resizeMode="contain" 
-                                    />
+                                    <Text style={[
+                                        styles.privacyText,
+                                        privacy === option && styles.privacyTextSelected
+                                    ]}>
+                                        {option}
+                                    </Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
+            
+                        {/* Save Button */}
+                        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                            <Text style={styles.saveButtonText}>저장하기</Text>
+                        </TouchableOpacity>
                     </View>
-        
-                    {/* Title & Content Input */}
-                    <View style={styles.titleSection}>
-                        <TextInput
-                            style={styles.titleInput}
-                            placeholder="제목을 입력하세요"
-                            value={headline}
-                            onChangeText={setHeadline}
-                            placeholderTextColor="#FFB6C1"
-                        />
-                    </View>
-        
-                    <View style={styles.contentWrapper}>
-                        <TextInput
-                            style={styles.contentInput}
-                            placeholder="일기를 작성해주세요..."
-                            value={content}
-                            onChangeText={setContent}
-                            multiline
-                            placeholderTextColor="#FFB6C1"
-                        />
-                    </View>
-        
-                    {/* Privacy Options */}
-                    <View style={styles.privacySection}>
-                        {['Private', 'Couple'].map((option) => (
-                            <TouchableOpacity
-                                key={option}
-                                style={[
-                                    styles.privacyOption,
-                                    privacy === option && styles.privacyOptionSelected
-                                ]}
-                                onPress={() => setPrivacy(option as 'Private' | 'Couple')}
-                            >
-                                <Text style={[
-                                    styles.privacyText,
-                                    privacy === option && styles.privacyTextSelected
-                                ]}>
-                                    {option}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-        
-                    {/* Save Button */}
-                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <Text style={styles.saveButtonText}>저장하기</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </KeyboardAvoidComponent>
+                </ScrollView>
+            </KeyboardAvoidComponent>
+        </SafeAreaView>
     );    
 };
 
@@ -321,11 +328,19 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFF5F7',
-        paddingTop: 60,
         alignItems: 'center',
     },
+    Viewcontainer: {
+        flex: 1, 
+        backgroundColor: '#FFF5F7',
+        padding: 20,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
+    },
     diaryCard: {
-        width: '95%',
+        width: '100%',
         flex: 0.92,
         marginTop: 25,
         backgroundColor: 'white',

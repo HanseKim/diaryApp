@@ -8,6 +8,8 @@ import {
   FlatList,
   StyleSheet,
   SafeAreaView,
+  Keyboard,
+  KeyboardEvent
 } from "react-native";
 import { io } from "socket.io-client";
 import { AppContext } from "../contexts/appContext";
@@ -49,7 +51,31 @@ const MessageScreen: React.FC<{ route: any, navigation: any }> = ({ route, navig
 
   };
 
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
+// 키보드 이벤트 리스너 설정
+useEffect(() => {
+  const keyboardDidShowListener = Keyboard.addListener(
+    "keyboardDidShow",
+    (event: KeyboardEvent) => {
+      setKeyboardHeight(event.endCoordinates.height);
+      setIsKeyboardVisible(true);
+      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    }
+  );
+
+  const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+    setKeyboardHeight(0);
+    setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+    setIsKeyboardVisible(false);
+  });
+
+  return () => {
+    keyboardDidShowListener.remove();
+    keyboardDidHideListener.remove();
+  };
+}, []);
 
   const flatListRef = useRef<FlatList<MessageProp>>(null); // FlatList 참조 생성
 
@@ -140,24 +166,18 @@ const MessageScreen: React.FC<{ route: any, navigation: any }> = ({ route, navig
     </View>
   );
 
-  return ( //SafeAreaView
-    <SafeAreaView  style={styles.container}>
+  return (
+    <SafeAreaView style={styles.container}>
       <KeyboardAvoidComponent>
-        <View style={styles.messageCard}>
-          <View style={styles.ribbon}>
-            <View style={styles.ribbonEnd} />
-          </View>
-          
+        <View style={[styles.messageCard, { marginBottom: isKeyboardVisible ? keyboardHeight : 0 }]}>
           <FlatList
             ref={flatListRef}
             data={messages}
             keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
+            renderItem={({ item }) => (
               <View style={[
                 styles.messageContainer,
-                item.user == userid 
-                  ? styles.sentMessage
-                  : styles.receivedMessage
+                item.user == userid ? styles.sentMessage : styles.receivedMessage
               ]}>
                 <View style={styles.messageContent}>
                   <Text style={styles.messageText}>{item.text}</Text>
@@ -165,10 +185,12 @@ const MessageScreen: React.FC<{ route: any, navigation: any }> = ({ route, navig
                 </View>
               </View>
             )}
-            contentContainerStyle={styles.chatList}
+            contentContainerStyle={{ flexGrow: 1 }}
             showsVerticalScrollIndicator={true}
             nestedScrollEnabled={true}
-            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+            keyboardDismissMode="on-drag"
+            keyboardShouldPersistTaps="always"
           />
   
           <View style={styles.inputContainer}>

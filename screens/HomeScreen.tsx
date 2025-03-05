@@ -96,6 +96,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     const year = currentDate.getFullYear();
     
     const calendarMatrix = generateCalender(year, month);
+    const rowCount = calendarMatrix.length;
 
     // Navigation functions
     const goToPreviousMonth = () => {
@@ -262,7 +263,7 @@ const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                                 return (
                                     <View 
                                         style={[
-                                            styles.dateBox,
+                                            rowCount > 5 ? styles.sixRowDateBox : styles.fiveRowDateBox,
                                             isToday && styles.todayDateBox
                                         ]} 
                                         key={colIndex}
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between', // 양쪽 정렬
         alignItems: 'center',
-        paddingHorizontal: 15,
+        paddingHorizontal: 10,
         marginBottom: 15, // 통일된 하단 여백
     },
     headerTextContainer: {
@@ -455,9 +456,26 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         paddingHorizontal: 8,
     },
-    dateBox: {
+    // 5줄용 dateBox
+    fiveRowDateBox: {
         width: '13%',
         aspectRatio: 0.45,
+        backgroundColor: 'white',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#FFE5EC',
+        padding: 4,
+        marginHorizontal: 2,
+        shadowColor: '#FFD6EA',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 1,
+    },
+    // 6줄용 dateBox
+    sixRowDateBox: {
+        width: '13%',
+        aspectRatio: 0.55,
         backgroundColor: 'white',
         borderRadius: 12,
         borderWidth: 1,

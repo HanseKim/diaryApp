@@ -35,7 +35,7 @@ const LoginScreen: React.FC<{ route: any, navigation: any }> = ({ route, navigat
 
       if (enabled) {
         const token = await messaging().getToken();
-        Alert.alert('token successfully made', token);
+        // Alert.alert('token successfully made', token);
         return token;
       } else {
         return null;
